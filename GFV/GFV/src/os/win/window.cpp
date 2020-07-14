@@ -1,7 +1,15 @@
 #include "window.h"
 
+#include <windowsx.h>
+
+// Prototipos
+
+void MouseDown(Window*,const UINT&);
+void MouseUp(Window*, const UINT&);
+
+//!
+
 Window::Window(const RectI& bounds, const wchar_t* nameclass) : m_bounds(bounds),
-m_background(D2D1::ColorF::Black),
 m_hwnd(nullptr),
 m_hwndParent(nullptr),
 m_nameclass(nameclass)
@@ -10,10 +18,16 @@ m_nameclass(nameclass)
 bool Window::init()
 {
 	Register_Class(this);
-	this->m_hwnd = CreateHWND(this);
+	this->m_hwnd = CreateHWND();
 
 	if (m_hwnd == nullptr)
 		return false;
+
+	m_graphics = Graphics::Create(m_hwnd);
+
+	m_trackmouseleave.cbSize = sizeof(TRACKMOUSEEVENT);
+	m_trackmouseleave.dwFlags = TME_LEAVE;
+	m_trackmouseleave.hwndTrack = m_hwnd;
 
 	this->OnCreate();
 
@@ -29,7 +43,7 @@ void Window::Register_Class(Window* self)
 
 	WNDCLASSEX wcex = { 0 };
 	wcex.cbSize = sizeof(WNDCLASSEX);
-	wcex.hbrBackground = CreateSolidBrush(RGB(self->m_background.r * 255, self->m_background.g * 255, self->m_background.b * 255));
+	wcex.hbrBackground = nullptr;
 	wcex.hCursor = nullptr;
 	wcex.hIcon = wcex.hIconSm = nullptr;
 	wcex.hInstance = hInstance;
@@ -57,7 +71,7 @@ LRESULT Window::staticWndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 		window = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
-	if (window != nullptr)
+	if (window)
 	{
 		return window->WndProc(hwnd, msg, wparam, lparam);
 	}
@@ -72,26 +86,104 @@ LRESULT Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	switch (msg)
 	{
 	case WM_WINDOWPOSCHANGED:
+	{
 		LPWINDOWPOS newPosition = reinterpret_cast<LPWINDOWPOS>(lparam);
 		m_bounds = RectI(newPosition->x, newPosition->y, newPosition->cx, newPosition->cy);
+	}
+	break;
+	case WM_PAINT:
+		m_graphics->BeginDraw();
+		this->OnPaint();
+		for (auto item : m_drawables)
+		{
+			assert(&item);
+			item->Draw(m_graphics);
+		}
+		m_graphics->EndDraw();
 		break;
+	case WM_SIZE:
+		m_graphics->Resize();
+		break;
+	case WM_CLOSE:
+		PostQuitMessage(0);
+		break;
+#pragma region Mouse
+	case WM_LBUTTONDOWN:
+	case WM_MBUTTONDOWN:
+	case WM_RBUTTONDOWN:
+		MouseDown(this,msg);
+		break;
+	case WM_LBUTTONUP:
+	case WM_MBUTTONUP:
+	case WM_RBUTTONUP:
+		MouseUp(this, msg);
+		break;
+	case WM_MOUSEMOVE:
+		TrackMouseEvent(&m_trackmouseleave);
+		this->OnMouseMove(PointI(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)));
+		break;
+	case WM_MOUSELEAVE:
+		this->OnLeave();
+		break;
+#pragma endregion
 	}
 	return DefWindowProc(hwnd, msg, wparam, lparam);
 }
 
-HWND Window::CreateHWND(Window* self)
+void MouseDown(Window* window,const UINT& flags)
+{
+	MouseButton button;
+	switch (flags)
+	{
+	case WM_LBUTTONDOWN: button = MouseButton::Left;	break;
+	case WM_MBUTTONDOWN: button = MouseButton::Medium;	break;
+	case WM_RBUTTONDOWN: button = MouseButton::Right;	break;
+	}
+
+	window->OnMouseDown(button);
+}
+void MouseUp(Window* window, const UINT& flags)
+{
+	MouseButton button;
+	switch (flags)
+	{
+	case WM_LBUTTONUP: button = MouseButton::Left;		break;
+	case WM_MBUTTONUP: button = MouseButton::Medium;	break;
+	case WM_RBUTTONUP: button = MouseButton::Right;		break;
+	}
+
+	window->OnMouseUp(button);
+}
+
+void Window::addDrawable(IDrawable* drawable)
+{
+	m_drawables.push_back(drawable);
+	std::cout << "Añadicion correcta! "<<m_drawables.size()<< std::endl;
+	drawable = nullptr;
+}
+
+void Window::deleteDrawable()
+{
+	while (m_drawables.size() > 0)
+	{
+		delete m_drawables.at(m_drawables.size()-1);
+		m_drawables.pop_back();
+	}
+}
+
+HWND Window::CreateHWND()
 {
 	HWND hwnd = CreateWindowEx(
 		WS_EX_APPWINDOW,
-		self->m_nameclass,
+		this->m_nameclass,
 		L"",
 		WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN,
-		self->m_bounds.x, self->m_bounds.y,
-		self->m_bounds.weidth, self->m_bounds.height,
-		self->m_hwndParent,
+		this->m_bounds.x, this->m_bounds.y,
+		this->m_bounds.weidth, this->m_bounds.height,
+		this->m_hwndParent,
 		nullptr,
 		nullptr,
-		self
+		this
 	);
 
 	if (!hwnd)
@@ -169,4 +261,3 @@ void Window::SetSize(const SizeU& size)
 {
 	SetWindowPos(m_hwnd, NULL, 0, 0, size.width, size.height, SWP_NOMOVE | SWP_NOZORDER);
 }
-

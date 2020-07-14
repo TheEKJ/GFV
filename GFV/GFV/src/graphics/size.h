@@ -5,6 +5,7 @@ struct Size
 public:
 	T width, height;
 	Size() : width(0), width(0) {};
+	Size(const T& size) : width(size), height(size) {};
 	Size(const T& Width, const T& Height) : width(Width), height(Height) {};
 
 	Size operator=(const Size& size)
