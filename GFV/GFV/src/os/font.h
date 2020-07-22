@@ -5,7 +5,7 @@ class Font
 public:
 	Font(const wchar_t* familyName, const D2D1::ColorF& color,const size_t& size);
 	
-	const wchar_t* GetFamilyName() { return m_familyName; }
+	const wchar_t* GetFamilyName() const { return m_familyName; }
 	D2D1::ColorF GetColor() const { return m_color; }
 	size_t GetSize() const { return m_size; }
 

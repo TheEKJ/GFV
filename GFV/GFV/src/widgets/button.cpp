@@ -14,8 +14,9 @@ void Button::OnPaint()
 {
 
 	m_graphics->Clear(*m_actualColor);
+	/*
 	if (m_image)
-		m_graphics->DrawBitmap(m_image);
+		m_graphics->DrawBitmap(m_image);*/
 
 }
 

@@ -12,4 +12,7 @@ public:
 	virtual void OnMouseUp(const MouseButton& button) override {};
 	virtual void OnMouseDown(const MouseButton& button) override {};
 	virtual void OnMouseMove(const PointI& position) override {};
+	virtual void OnCommandExecute(const UINT& id) override {};
+	virtual void OnResize() override {};
+	virtual void OnDropFile(const wchar_t* filePath) override {};
 };

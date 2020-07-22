@@ -76,11 +76,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Usuario\source\repos\GFV\GFV\GFV\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Usuario\source\repos\GFV\GFV\GFV;C:\Users\Usuario\source\repos\GFV\GFV\GFV\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>d2d1.lib;Windowscodecs.lib;dwrite.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;d2d1.lib;Windowscodecs.lib;dwrite.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -89,11 +89,11 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Users\Usuario\source\repos\GFV\GFV\GFV\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Usuario\source\repos\GFV\GFV\GFV;C:\Users\Usuario\source\repos\GFV\GFV\GFV\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>d2d1.lib;Windowscodecs.lib;dwrite.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>winmm.lib;d2d1.lib;Windowscodecs.lib;dwrite.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -131,23 +131,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\graphics\drawable\image\imagedrawable.cpp" />
     <ClCompile Include="src\os\font.cpp" />
     <ClCompile Include="src\widgets\button.cpp" />
     <ClCompile Include="src\app\app.cpp" />
     <ClCompile Include="src\graphics\graphics.cpp" />
-    <ClCompile Include="src\graphics\image.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\os\win\window.cpp" />
-    <ClCompile Include="src\widgets\childwindow.cpp" />
+    <ClCompile Include="src\widgets\base\childwindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\graphics\drawable\idrawable.h" />
-    <ClInclude Include="src\graphics\drawable\imagedrawable.h" />
-    <ClInclude Include="src\graphics\drawable\rectdrawable.h" />
+    <ClInclude Include="src\graphics\drawable\image\imagedrawable.h" />
+    <ClInclude Include="resource.h" />
+    <ClInclude Include="src\global.h" />
+    <ClInclude Include="src\graphics\drawable\stringdrawable.h" />
+    <ClInclude Include="src\os\cursor.h" />
     <ClInclude Include="src\os\font.h" />
     <ClInclude Include="src\os\mousebutton.h" />
+    <ClInclude Include="src\viewer\viewer.h" />
     <ClInclude Include="src\widgets\button.h" />
-    <ClInclude Include="src\graphics\image.h" />
     <ClInclude Include="src\graphics\graphics.h" />
     <ClInclude Include="src\app\app.h" />
     <ClInclude Include="src\graphics\point.h" />
@@ -156,7 +159,16 @@
     <ClInclude Include="src\os\predefinedpos.h" />
     <ClInclude Include="src\os\win\winadapter.h" />
     <ClInclude Include="src\os\win\window.h" />
-    <ClInclude Include="src\widgets\childwindow.h" />
+    <ClInclude Include="src\widgets\base\childwindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Media Include="..\..\..\..\..\Music\shutdown.wav" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\..\..\Pictures\graphic-design-fantasy-landscape-retro-wave-pixeles-wallpaper-preview.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,11 +1,11 @@
 #pragma once
-#include "graphics/drawable/idrawable.h"
 #include "graphics/graphics.h"
 #include "graphics/rect.h"
 #include "graphics/point.h"
 #include "graphics/size.h"
 #include "os/predefinedpos.h"
 #include "os/mousebutton.h"
+#include "os/cursor.h"
 
 #include <iostream>
 #include <Windows.h>
@@ -24,40 +24,43 @@ public:
 		m_graphics->~Graphics();
 	}
 
-	bool init();
+	virtual bool init();
 	
 	void SetTitle(const wchar_t* title);
 	const wchar_t* GetTitle();
 
 	HWND GetWindowHandle() { return this->m_hwnd; }
 
-	HWND GetParentWindowHandle() { return this->m_hwndParent; }
-	void SetParentWindowHandle(HWND windowHandle) { this->m_hwndParent = windowHandle; }
-
 	RectI GetBounds() { return this->m_bounds; }
 
 	void SetPosition(const PointI& position);
-	void SetPredefinedPosition(const PredefinedPosition& pp);
+	void SetPredefinedPosition(const PredefinedPosition& pp,const PointI& padding = PointI(0,0));
 
 	void SetSize(const SizeU& size);
 
-	void addDrawable(IDrawable* drawable);
-	void deleteDrawable();
+	void SetMaxSize(const SizeU& size);
+	void SetMinSize(const SizeU& size);
+
+	void SetCursor(const Cursor& cursor);
 
 	virtual void OnCreate() = 0;
 	virtual void OnPaint() = 0;
 	virtual void OnLeave() = 0;
+	virtual void OnResize() = 0;
+	virtual void OnDropFile(const wchar_t* filePath) = 0;
 	virtual void OnMouseUp(const MouseButton& button) = 0;
 	virtual void OnMouseDown(const MouseButton& button) = 0;
 	virtual void OnMouseMove(const PointI& position) = 0;
+	virtual void OnCommandExecute(const UINT& id) = 0;
 
 protected:
+	SizeU m_maxSize,m_minSize;
+	HCURSOR m_cursor;
 	HWND m_hwndParent;
 	Graphics* m_graphics;
 	HWND m_hwnd;
 	const wchar_t* m_nameclass;
 	RectI m_bounds;
-	std::vector<IDrawable*> m_drawables;
 protected:
 	virtual HWND CreateHWND();
 private:

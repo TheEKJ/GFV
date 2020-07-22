@@ -1,7 +1,18 @@
 #include "graphics.h"
+#include "global.h"
 
 #include <sstream>
 #include <assert.h>
+
+template<typename T>
+inline void SafeRelease(T*& id2d1)
+{
+	if (nullptr != id2d1)
+	{
+		id2d1->Release();
+		id2d1 = nullptr;
+	}
+}
 
 bool Graphics::init(HWND windowSystemHandle)
 {
@@ -16,9 +27,7 @@ bool Graphics::init(HWND windowSystemHandle)
 		&m_renderTarget)))
 		return false;
 
-	if (FAILED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED, __uuidof(m_writeFactory), reinterpret_cast<IUnknown * *>(&m_writeFactory))))
-		return false;
-
+	m_init = true;
 	return true;
 }
 
@@ -41,6 +50,7 @@ Graphics* Graphics::Create(HWND windowSystemHandle)
 	return graphics;
 }
 
+/*
 void Graphics::DrawBitmap(Image* image,const PointF& position)
 {
 	assert(image);
@@ -52,7 +62,7 @@ void Graphics::DrawBitmap(Image* image,const PointF& position)
 		});
 	
 	m_renderTarget->DrawBitmap(image->GetBitmap(), D2D1::RectF(position.x, position.y, position.x + image->GetBitmap()->GetSize().width * image->GetScale().x, position.y + image->GetBitmap()->GetSize().height * image->GetScale().y),image->GetOpacity(),D2D1_BITMAP_INTERPOLATION_MODE_NEAREST_NEIGHBOR);
-}
+}*/
 
 void Graphics::DrawRectangle(const RectF& bounds, const D2D1_COLOR_F& color)
 {
@@ -78,9 +88,34 @@ void Graphics::Resize()
 
 Graphics::~Graphics()
 {
-	m_factory->Release();
-	m_renderTarget->Release();
-	
+	if (nullptr != this && m_init)
+	{
+		SafeRelease(m_factory);
+		SafeRelease(m_renderTarget);
+		m_init = false;
+	}
+}
+
+void Graphics::DrawString(const wchar_t* text, const Font& font)
+{
+	ID2D1SolidColorBrush* brush;
+	IDWriteTextFormat* textFormat;
+	// TODO: 15/07/2020: Añadir funcion drawtext en graphics e iniciar con el desarrollo visual
+	m_renderTarget->CreateSolidColorBrush(font.GetColor(), &brush);
+
+	global_IDWriteFactory->CreateTextFormat(font.GetFamilyName(), NULL, DWRITE_FONT_WEIGHT_NORMAL, DWRITE_FONT_STYLE_NORMAL,
+		DWRITE_FONT_STRETCH_NORMAL, font.GetSize(), L"", &textFormat);
+
+	m_renderTarget->DrawTextW(text, std::wcslen(text), textFormat, D2D1::RectF(0, 0,(wcslen(text)-1) *  (font.GetSize() / 2), NULL), brush);
+
+	brush->Release();
+	textFormat->Release();
+}
+
+void Graphics::Draw(IDrawable* drawable)
+{
+	if(drawable)
+		drawable->Draw(this);
 }
 
 /*

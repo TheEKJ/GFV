@@ -1,14 +1,28 @@
+#include "global.h"
 #include "app/app.h"
 
 #include <iostream>
+#include <locale.h>
 #include <thread>
 
 using namespace std;
 
+IWICImagingFactory* global_WICImagingFactory;
+IDWriteFactory* global_IDWriteFactory;
+
 int main()
 {
+	setlocale(LC_ALL, "");
+
+	CoInitialize(nullptr);
+
+	assert(SUCCEEDED(CoCreateInstance(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&global_WICImagingFactory))));
+
+	assert(SUCCEEDED(DWriteCreateFactory(DWRITE_FACTORY_TYPE_SHARED,__uuidof(global_IDWriteFactory),reinterpret_cast<IUnknown**>(&global_IDWriteFactory))));
+
 	App window;
 	assert(window.init());
+	
 	/*
 	POINT p;
 	thread t([&]()->void
@@ -28,7 +42,6 @@ int main()
 		});
 	t.detach();*/
 
-	CoInitialize(nullptr);
 	MSG msg;
 	while (GetMessage(&msg, nullptr, 0, 0) > 0)
 	{

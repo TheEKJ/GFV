@@ -1,21 +1,19 @@
 #pragma once
 #include "os/win/winadapter.h"
-#include "widgets/childwindow.h"
+#include "viewer/viewer.h"
 
 class App : public WindowAdapter
 {
 public:
 	App();
 
+	void Start(const wchar_t* filePath);
+
 	void OnCreate();
 	void OnPaint();
-
-	/// <summary>
-	/// Añade componentes a la aplicacion
-	/// </summary>
-	/// <param name="child">Debe ser un componente PUNTERO, NO UNO NORMAL</param>
-	void addComponent(ChildWindow* child);
-	void deleteComponents();
+	void OnCommandExecute(const UINT& id);
+	void OnDropFile(const wchar_t* filePath) { Start(filePath); };
+	void OnResize();
 private:
-	std::vector<std::unique_ptr<ChildWindow>> m_components;
+	Viewer m_viewer;
 };

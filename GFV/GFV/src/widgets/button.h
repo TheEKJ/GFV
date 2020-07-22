@@ -1,5 +1,5 @@
 #pragma once
-#include "childwindow.h"
+#include "base/childwindow.h"
 
 #include <functional>
 /// <summary>
@@ -26,7 +26,6 @@ public:
 
 	void Release()
 	{
-		m_image = nullptr;
 		InvalidateRect(m_hwnd, NULL, FALSE);
 	}
 
@@ -41,6 +40,5 @@ private:
 	bool m_isHover = false;
 	bool m_isPress = false;
 	std::function<void()> m_onClick;
-	Image* m_image;
 };
 

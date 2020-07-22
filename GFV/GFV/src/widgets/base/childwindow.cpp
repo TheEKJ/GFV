@@ -1,5 +1,11 @@
 #include "childwindow.h"
 
+bool ChildWindow::init(HWND parent)
+{
+	this->m_hwndParent = parent;
+	return Window::init();
+}
+
 HWND ChildWindow::CreateHWND()
 {
 	HWND hwnd = CreateWindow(
